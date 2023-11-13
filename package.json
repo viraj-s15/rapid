@@ -10,9 +10,12 @@
     "tauri": "tauri"
   },
   "dependencies": {
+    "@tauri-apps/api": "^1.5.1",
+    "pspdfkit": "^2023.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "@tauri-apps/api": "^1.5.1"
+    "react-pdf": "^7.5.1",
+    "rollup-plugin-copy": "^3.5.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
