@@ -8,27 +8,10 @@ export default function PdfViewerComponent(props) {
   const containerRef = useRef(null);
   const [numPages, setNumPages] = useState(null);
 
-  useEffect(() => {
-    const loadPDF = async () => {
-      try {
-        const pdfDoc = await pdfjs.getDocument({ data: props.document }).promise;
-        setNumPages(pdfDoc.numPages);
-      } catch (error) {
-        console.error("Error loading PDF:", error);
-      }
-    };
-
-    loadPDF();
-
-    return () => {
-      // Cleanup if needed
-    };
-  }, [props.document]);
-
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100vh" }}>
       <Document
-        file={{ data: props.document, range: [0, props.document.byteLength] }}
+        file={props.document}
         options={{
           cMapUrl: "/cmaps/",
           cMapPacked: true,
