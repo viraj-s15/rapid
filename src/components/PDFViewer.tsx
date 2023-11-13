@@ -6,7 +6,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/b
 
 export default function PdfViewerComponent(props) {
   const containerRef = useRef(null);
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState(1);
 
   return (
     <div ref={containerRef} style={{ width: "100%", height: "100vh" }}>
