@@ -1,50 +1,85 @@
-import React, { useState, useRef, useEffect } from "react";
+// PdfViewerComponent.tsx
+import React, { useState, useEffect, useRef } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "../styles/PDFViewer.css"; // Ensure this points to your CSS file location
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 interface PdfViewerProps {
   document: ArrayBuffer;
-  onInstance?: (instance: any) => void;
 }
 
-export default function PdfViewerComponent(props: PdfViewerProps): JSX.Element {
-  const [numPages, setNumPages] = useState(0);
-  const documentRef = useRef<any>(null);
+interface PageInfoProps {
+  currentPage: number;
+  numPages: number;
+  handlePageChange: (page: number) => void;
+}
 
-  useEffect(() => {
-    if (props.onInstance && documentRef.current) {
-      props.onInstance(documentRef.current);
+const PageInfo: React.FC<PageInfoProps> = ({ currentPage, numPages, handlePageChange }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pageNumber = inputRef.current?.value;
+    if (pageNumber) {
+      const parsedPageNumber = parseInt(pageNumber, 10);
+      if (!isNaN(parsedPageNumber) && parsedPageNumber >= 1 && parsedPageNumber <= numPages) {
+        handlePageChange(parsedPageNumber);
+      }
     }
-  }, [props.onInstance]);
-
-  function onDocumentLoadSuccess({ numPages: totalNumPages }: { numPages: number }) {
-    setNumPages(totalNumPages);
-  }
-
-  const renderPages = () => {
-    const pages = [];
-    for (let i = 1; i <= numPages; i++) {
-      pages.push(<Page key={`page_${i}`} pageNumber={i} renderTextLayer={false} />);
-    }
-    return pages;
   };
 
   return (
-    <div style={{ width: "100%", height: "100vh" }}>
-      <Document
-        file={props.document}
-        onLoadSuccess={onDocumentLoadSuccess}
-        inputRef={(ref) => {
-          documentRef.current = ref;
-        }}
-      >
-        {renderPages()}
-      </Document>
+    <div className="page-info">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="number"
+          ref={inputRef}
+          min="1"
+          max={numPages}
+          placeholder={`Page 1 - ${numPages}`}
+        />
+        <button type="submit">Go</button>
+      </form>
       <div>
-        <p>Page 1 of {numPages}</p>
+        Page {currentPage} of {numPages}
       </div>
     </div>
   );
-}
+};
+
+const PdfViewerComponent: React.FC<PdfViewerProps> = ({ document }) => {
+  const [numPages, setNumPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const viewerRef = useRef<HTMLDivElement>(null);
+
+  const handlePageLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    if (viewerRef.current) {
+      viewerRef.current.scrollIntoView();
+    }
+  };
+
+  return (
+    <div className="pdf-viewer" ref={viewerRef}>
+      <PageInfo currentPage={currentPage} numPages={numPages} handlePageChange={handlePageChange} />
+      <Document file={document} onLoadSuccess={handlePageLoadSuccess}>
+        {Array.from(new Array(numPages), (el, index) => (
+          <Page
+            key={`page_${index + 1}`}
+            pageNumber={index + 1}
+            renderTextLayer={false}
+            onLoadSuccess={() => handlePageChange(index + 1)}
+          />
+        ))}
+      </Document>
+    </div>
+  );
+};
+
+export default PdfViewerComponent;

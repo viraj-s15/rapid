@@ -1,0 +1,47 @@
+/* App.css */
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1f1f1f;
+  color: white;
+}
+
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #1f1f1f;
+  padding: 20px;
+}
+
+.page-info {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.page-info form {
+  display: flex;
+  align-items: center;
+}
+
+.page-info input[type="number"] {
+  margin-right: 10px;
+  padding: 5px;
+  width: 70px;
+}
+
+.page-info button {
+  padding: 5px 10px;
+  background-color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.react-pdf__Page {
+  border: 3px solid white;
+  margin: 2rem;
+}
