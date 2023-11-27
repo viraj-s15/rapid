@@ -1,4 +1,3 @@
-// PdfViewerComponent.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
@@ -40,7 +39,6 @@ const PageInfo: React.FC<PageInfoProps> = ({ currentPage, numPages, handlePageCh
           max={numPages}
           placeholder={`Page 1 - ${numPages}`}
         />
-        <button type="submit">Go</button>
       </form>
       <div>
         Page {currentPage} of {numPages}
@@ -52,16 +50,21 @@ const PageInfo: React.FC<PageInfoProps> = ({ currentPage, numPages, handlePageCh
 const PdfViewerComponent: React.FC<PdfViewerProps> = ({ document }) => {
   const [numPages, setNumPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageRefs, setPageRefs] = useState<Array<React.RefObject<HTMLDivElement>>>([]);
   const viewerRef = useRef<HTMLDivElement>(null);
 
   const handlePageLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
   };
 
+  useEffect(() => {
+    setPageRefs(Array.from({ length: numPages }, () => React.createRef()));
+  }, [numPages]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    if (viewerRef.current) {
-      viewerRef.current.scrollIntoView();
+    if (pageRefs[page - 1] && pageRefs[page - 1].current) {
+      pageRefs[page - 1]?.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
@@ -70,12 +73,13 @@ const PdfViewerComponent: React.FC<PdfViewerProps> = ({ document }) => {
       <PageInfo currentPage={currentPage} numPages={numPages} handlePageChange={handlePageChange} />
       <Document file={document} onLoadSuccess={handlePageLoadSuccess}>
         {Array.from(new Array(numPages), (el, index) => (
-          <Page
-            key={`page_${index + 1}`}
-            pageNumber={index + 1}
-            renderTextLayer={false}
-            onLoadSuccess={() => handlePageChange(index + 1)}
-          />
+          <div key={`page_${index + 1}`} ref={pageRefs[index]}>
+            <Page
+              pageNumber={index + 1}
+              renderTextLayer={false}
+              onLoadSuccess={() => handlePageChange(index + 1)}
+            />
+          </div>
         ))}
       </Document>
     </div>
