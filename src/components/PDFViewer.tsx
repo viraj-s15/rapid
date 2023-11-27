@@ -1,13 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
-export default function PdfViewerComponent(props) {
-  const [numPages, setNumPages] = useState(0);
+interface PdfViewerProps {
+  document: ArrayBuffer;
+  onInstance?: (instance: any) => void;
+}
 
-  function onDocumentLoadSuccess({ numPages: totalNumPages }) {
+export default function PdfViewerComponent(props: PdfViewerProps): JSX.Element {
+  const [numPages, setNumPages] = useState(0);
+  const documentRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (props.onInstance && documentRef.current) {
+      props.onInstance(documentRef.current);
+    }
+  }, [props.onInstance]);
+
+  function onDocumentLoadSuccess({ numPages: totalNumPages }: { numPages: number }) {
     setNumPages(totalNumPages);
   }
 
@@ -21,7 +33,13 @@ export default function PdfViewerComponent(props) {
 
   return (
     <div style={{ width: "100%", height: "100vh" }}>
-      <Document file={props.document} onLoadSuccess={onDocumentLoadSuccess}>
+      <Document
+        file={props.document}
+        onLoadSuccess={onDocumentLoadSuccess}
+        inputRef={(ref) => {
+          documentRef.current = ref;
+        }}
+      >
         {renderPages()}
       </Document>
       <div>

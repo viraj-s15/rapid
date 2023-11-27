@@ -70,16 +70,10 @@ function App({}: AppProps): JSX.Element {
     });
   }, [currentState, filePath]);
 
-  const handleInstanceSet = useCallback((newInstance: React.RefObject<any>) => {
-    pspdfkitInstance.current = newInstance;
-  }, []);
-
   return (
     <div className="App">
       <div className="PDF-viewer">
-        {fileBuffer ? (
-          <PdfViewerComponent document={fileBuffer} onInstance={handleInstanceSet} />
-        ) : null}
+        {fileBuffer ? <PdfViewerComponent document={fileBuffer} /> : null}
       </div>
     </div>
   );
