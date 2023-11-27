@@ -19,7 +19,7 @@ body {
   display: flex;
   justify-content: center;
   width: 100%;
-  gap:60rem;
+  gap:40em;
   position: sticky;
   top:0;
   z-index: 1;
