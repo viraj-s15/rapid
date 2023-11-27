@@ -18,7 +18,7 @@ interface AppProps {}
 function App({}: AppProps): JSX.Element {
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
   const [filePath, setFilePath] = useState<string | null>(null);
-  const pspdfkitInstance = useRef<any>(null); // Update type accordingly
+  const pspdfkitInstance = useRef<any>(null);
   const currentState = useRef<STATES>(STATES.IDLE);
 
   useEffect(() => {
@@ -27,8 +27,6 @@ function App({}: AppProps): JSX.Element {
         const selectedPaths = await open({
           multiple: false,
         });
-
-        // Ensure it's a string and not an array of strings
         const selectedPath = Array.isArray(selectedPaths) ? selectedPaths[0] : selectedPaths;
 
         if (!selectedPath) return;
