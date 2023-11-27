@@ -24,9 +24,13 @@ function App({}: AppProps): JSX.Element {
   useEffect(() => {
     const openFile = async () => {
       try {
-        const selectedPath = await open({
+        const selectedPaths = await open({
           multiple: false,
         });
+
+        // Ensure it's a string and not an array of strings
+        const selectedPath = Array.isArray(selectedPaths) ? selectedPaths[0] : selectedPaths;
+
         if (!selectedPath) return;
         const content = await readBinaryFile(selectedPath);
         setFileBuffer(content.buffer);
@@ -68,7 +72,7 @@ function App({}: AppProps): JSX.Element {
     });
   }, [currentState, filePath]);
 
-  const handleInstanceSet = useCallback((newInstance) => {
+  const handleInstanceSet = useCallback((newInstance: React.RefObject<any>) => {
     pspdfkitInstance.current = newInstance;
   }, []);
 
